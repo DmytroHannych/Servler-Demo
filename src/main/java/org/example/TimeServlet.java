@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
@@ -18,7 +19,7 @@ public class TimeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         TimeZone utc = TimeZone.getTimeZone("UTC");
-        String currencyTime = LocalDate.now().format(DateTimeFormatter.ofPattern(
+        String currencyTime = LocalDate.now(utc.toZoneId()).format(DateTimeFormatter.ofPattern(
                 "yyyy-MM-dd hh:mm:ss z"));
 
         resp.setContentType("text/xml; charset=utf-8");

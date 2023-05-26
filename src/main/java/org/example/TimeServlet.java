@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
@@ -19,21 +20,18 @@ import static java.util.Objects.isNull;
 public class TimeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-        TimeZone utc = TimeZone.getTimeZone("UTC");
-        String currencyTime = LocalDate.now(utc.toZoneId()).format(DateTimeFormatter.ofPattern(
-                "yyyy-MM-dd hh:mm:ss"));
+        String timeZone = getTimeZoneFromRequest(req);
+        TimeZone utc = TimeZone.getTimeZone(timeZone);
+        String currencyTime = LocalDateTime.now(utc.toZoneId())
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss ")) + timeZone;
         resp.setContentType("text/html; charset=utf-8");
-        resp.getWriter().write(currencyTime + "${timezone}".replace("${timezone}", timeZone(req)));
+        resp.getWriter().write(currencyTime);
         resp.getWriter().close();
     }
 
-    private String timeZone(HttpServletRequest req) {
+    private String getTimeZoneFromRequest(HttpServletRequest req) {
         String timezone = req.getParameter("timezone");
-        if (isNull(timezone)){
-            return "UTC";
-        } else {
-            return timezone;
-        }
+        return isNull(timezone) ? "UTC" : timezone;
     }
 }
+

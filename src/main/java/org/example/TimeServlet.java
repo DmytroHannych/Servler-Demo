@@ -12,6 +12,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
+import static java.util.Objects.isNull;
+
 
 @WebServlet(value = "/time")
 public class TimeServlet extends HttpServlet {
@@ -20,17 +22,18 @@ public class TimeServlet extends HttpServlet {
 
         TimeZone utc = TimeZone.getTimeZone("UTC");
         String currencyTime = LocalDate.now(utc.toZoneId()).format(DateTimeFormatter.ofPattern(
-                "yyyy-MM-dd hh:mm:ss z"));
-
-        resp.setContentType("text/xml; charset=utf-8");
-       resp.getWriter().write(currencyTime + "${timezone}".replace("${timezone}",timeZone(req)));
-       resp.getWriter().close();
+                "yyyy-MM-dd hh:mm:ss"));
+        resp.setContentType("text/html; charset=utf-8");
+        resp.getWriter().write(currencyTime + "${timezone}".replace("${timezone}", timeZone(req)));
+        resp.getWriter().close();
     }
 
-    private String timeZone(HttpServletRequest req){
-        if(req.getParameterMap().containsKey("timezone")){
-            return req.getParameter("timezone");
+    private String timeZone(HttpServletRequest req) {
+        String timezone = req.getParameter("timezone");
+        if (isNull(timezone)){
+            return "UTC";
+        } else {
+            return timezone;
         }
-        return "<unnamed>";
     }
 }
